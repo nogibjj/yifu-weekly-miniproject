@@ -18,7 +18,12 @@ cargo lambda invoke --remote \
 ```
 
 
+<<<<<<< HEAD
 cause the error of -` × failed to assume new lambda role. Try deploying using the flag --iam-role arn:aws:iam::969594881030:role/cargo-lambda-role-08eb8c18-cb05-45a5-ba02-0d46a54eb8e5` 
 
 I revise the `Makefile` to `make deploy` to `cargo lambda deploy --iam-role arn:aws:iam::969594881030:role/cargo-lambda-role-08eb8c18-cb05-45a5-ba02-0d46a54eb8e5` and it works.
+=======
+cause the error of -` × failed to assume new lambda role. Try deploying using the flag --iam-role...` 
+I revise the `Makefile` to `make deploy` to `cargo lambda deploy --iam-role...` and it works.
+>>>>>>> 83920c4 (revise README)
 

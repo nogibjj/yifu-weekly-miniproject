@@ -1,29 +1,43 @@
-use clap::Parser;
-use rand::Rng;
+#![feature(proc_macro_hygiene, decl_macro)]
+#[macro_use]
+extern crate rocket;
 
-#[derive(Parser)]
-#[clap(version = "1.0", author = "ChatGPT", about = "Roll the dice and return a random number between 1 and 6")]
-struct Cli {
-    #[clap(subcommand)]
-    command: Option<Commands>,
-}
+mod parse;
+mod roll;
 
-#[derive(Parser)]
-enum Commands {
-    #[clap(version = "1.0", author = "ChatGPT", about = "Roll the dice and return a random number between 1 and 6")]
-    RollDice {},
-}
+use parse::parse_dice_str;
+use rocket::response::status::BadRequest;
+use roll::{Rolls, roll_crit, roll_normal};
 
 fn main() {
-    let cli = Cli::parse();
-    match cli.command {
-        Some(Commands::RollDice {}) => {
-            let result = rand::thread_rng().gen_range(1, 7);
-            println!("You rolled: {}", result);
-            if result == 6 {
-                println!("Congratulations! You got the biggest one!");
-            }
-        },
-        _ => println!("Invalid command"),
-    }
+    rocket::ignite()
+        .mount("/roll", routes![normal, critical])
+        .launch();
+}
+
+#[get("/<dice>")]
+fn normal(dice: String) -> Result<String, BadRequest<String>> {
+    let cmd = parse_dice_str(dice.as_ref())?;
+    let rolls = roll_normal(&cmd);
+    let resp = assemble_response(&rolls);
+    Ok(resp)
+}
+
+#[get("/crit/<dice>")]
+fn critical(dice: String) -> Result<String, BadRequest<String>> {
+    let cmd = parse_dice_str(dice.as_ref())?;
+    let rolls = roll_crit(&cmd);
+    let resp = assemble_response(&rolls);
+    Ok(resp)
+}
+
+fn assemble_response(rolls: &Rolls) -> String {
+    let roll_str: String = rolls
+        .0
+        .iter()
+        .map(|d| d.to_string())
+        .collect::<Vec<String>>()
+        .join(" + ");
+    let sum_str = rolls.0.iter().sum::<usize>().to_string();
+    [roll_str, sum_str].join(" = ")
 }
