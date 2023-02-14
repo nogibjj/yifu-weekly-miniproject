@@ -1,9 +1,8 @@
-//A command-line tool to convert a decimal to hexadecimal
+//A command-line tool to Get the square of a number
 use clap::Parser;
-use decimaltohexadecimal::decimaltohexadecimal;
 
 #[derive(Parser)]
-#[clap(version = "1.0", author = "Yifu", about = "convert a decimal to hexadecimal")]
+#[clap(version = "1.0", author = "Yifu", about = "")]
 struct Cli {
     #[clap(subcommand)]
     command: Option<Commands>,
@@ -11,8 +10,8 @@ struct Cli {
 
 #[derive(Parser)]
 enum Commands {
-    #[clap(version = "1.0", author = "Yifu", about = "convert a decimal to hexadecimal")]
-    Decimaltohexadecimal {
+    #[clap(version = "1.0", author = "Yifu", about = "")]
+    Squarenum {
         #[clap(short, long)]
         number: String,
     },
@@ -22,10 +21,13 @@ enum Commands {
 fn main() {
     let args = Cli::parse();
     match args.command {
-        Some(Commands::Decimaltohexadecimal { number }) => {
-            let number = number.parse::<i32>().unwrap();
-            println!("{}", decimaltohexadecimal(number));
+        Some(Commands::Squarenum { number }) => {
+            let num: i32 = number.parse().unwrap();
+            let result = num * num;
+            println!("The square of {} is {}", number, result);
         }
-        None => println!("No command was used"),
+        None => {
+            println!("No command was used");
+        }
     }
 }

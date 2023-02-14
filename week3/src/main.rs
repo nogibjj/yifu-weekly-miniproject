@@ -1,43 +1,31 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-#[macro_use]
-extern crate rocket;
+//A command-line tool to convert a decimal to hexadecimal
+use clap::Parser;
+use decimaltohexadecimal::decimaltohexadecimal;
 
-mod parse;
-mod roll;
+#[derive(Parser)]
+#[clap(version = "1.0", author = "Yifu", about = "convert a decimal to hexadecimal")]
+struct Cli {
+    #[clap(subcommand)]
+    command: Option<Commands>,
+}
 
-use parse::parse_dice_str;
-use rocket::response::status::BadRequest;
-use roll::{Rolls, roll_crit, roll_normal};
+#[derive(Parser)]
+enum Commands {
+    #[clap(version = "1.0", author = "Yifu", about = "convert a decimal to hexadecimal")]
+    Decimaltohexadecimal {
+        #[clap(short, long)]
+        number: String,
+    },
+}
 
+//this is the main function
 fn main() {
-    rocket::ignite()
-        .mount("/roll", routes![normal, critical])
-        .launch();
-}
-
-#[get("/<dice>")]
-fn normal(dice: String) -> Result<String, BadRequest<String>> {
-    let cmd = parse_dice_str(dice.as_ref())?;
-    let rolls = roll_normal(&cmd);
-    let resp = assemble_response(&rolls);
-    Ok(resp)
-}
-
-#[get("/crit/<dice>")]
-fn critical(dice: String) -> Result<String, BadRequest<String>> {
-    let cmd = parse_dice_str(dice.as_ref())?;
-    let rolls = roll_crit(&cmd);
-    let resp = assemble_response(&rolls);
-    Ok(resp)
-}
-
-fn assemble_response(rolls: &Rolls) -> String {
-    let roll_str: String = rolls
-        .0
-        .iter()
-        .map(|d| d.to_string())
-        .collect::<Vec<String>>()
-        .join(" + ");
-    let sum_str = rolls.0.iter().sum::<usize>().to_string();
-    [roll_str, sum_str].join(" = ")
+    let args = Cli::parse();
+    match args.command {
+        Some(Commands::Decimaltohexadecimal { number }) => {
+            let number = number.parse::<i32>().unwrap();
+            println!("{}", decimaltohexadecimal(number));
+        }
+        None => println!("No command was used"),
+    }
 }
