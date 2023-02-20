@@ -1,3 +1,5 @@
+# Mini Project week2
+
 ## Steps to run
 - `make format` to format code
 - `make lint` to lint
