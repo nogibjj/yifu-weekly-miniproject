@@ -30,4 +30,8 @@ fn main() {
             println!("No command was used");
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 8f6fd75 (week7)
